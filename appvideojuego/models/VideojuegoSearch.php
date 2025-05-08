@@ -11,14 +11,16 @@ use app\models\Videojuego;
  */
 class VideojuegoSearch extends Videojuego
 {
+    public $generoNombre;
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['idvideojuego', 'director_iddirector'], 'integer'],
-            [['portada', 'nombre', 'fechalanzamiento'], 'safe'],
+            [['idvideojuego',], 'integer'],
+            [['portada', 'nombre', 'fechalanzamiento', 'generoNombre'], 'safe'],
         ];
     }
 
@@ -41,31 +43,35 @@ class VideojuegoSearch extends Videojuego
      */
     public function search($params, $formName = null)
     {
-        $query = Videojuego::find();
-
-        // add conditions that should always apply here
+        $query = Videojuego::find()->joinWith('generoIdgeneros'); // asegúrate de que esta relación existe
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
+        // Si quieres que las columnas de genero se ordenen y filtren en GridView:
+        $dataProvider->sort->attributes['generoNombre'] = [
+            'asc' => ['genero.nombre' => SORT_ASC],
+            'desc' => ['genero.nombre' => SORT_DESC],
+        ];
+
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 
-        // grid filtering conditions
+        // Filtros exactos
         $query->andFilterWhere([
             'idvideojuego' => $this->idvideojuego,
             'fechalanzamiento' => $this->fechalanzamiento,
             'director_iddirector' => $this->director_iddirector,
         ]);
 
-        $query->andFilterWhere(['like', 'portada', $this->portada])
-            ->andFilterWhere(['like', 'nombre', $this->nombre]);
+        // Filtros con LIKE, con columnas completamente calificadas para evitar ambigüedad
+        $query->andFilterWhere(['like', 'videojuego.portada', $this->portada])
+            ->andFilterWhere(['like', 'videojuego.nombre', $this->nombre])
+            ->andFilterWhere(['like', 'genero.nombre', $this->generoNombre]);
 
         return $dataProvider;
     }

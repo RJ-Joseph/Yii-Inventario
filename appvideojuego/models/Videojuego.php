@@ -50,7 +50,7 @@ class Videojuego extends \yii\db\ActiveRecord
             [['director_iddirector'], 'exist', 'skipOnError' => true, 'targetClass' => Director::class, 'targetAttribute' => ['director_iddirector' => 'iddirector']],
             [['desarrolladora_iddesarrolladora'], 'exist', 'skipOnError' => true, 'targetClass' => Desarrolladora::class, 'targetAttribute' => ['desarrolladora_iddesarrolladora' => 'iddesarrolladora']],
             [['distribuidora_iddistribuidora'], 'exist', 'skipOnError' => true, 'targetClass' => Distribuidora::class, 'targetAttribute' => ['distribuidora_iddistribuidora' => 'iddistribuidora']],
-            [['imageFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],
+            [['imageFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],    
         ];
     }
 
