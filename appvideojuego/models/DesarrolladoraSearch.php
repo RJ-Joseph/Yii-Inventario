@@ -17,7 +17,7 @@ class DesarrolladoraSearch extends Desarrolladora
     public function rules()
     {
         return [
-            [['iddesarrolladora', 'videojuego_idvideojuego'], 'integer'],
+            [['iddesarrolladora'], 'integer'],
             [['nombre'], 'safe'],
         ];
     }
@@ -60,7 +60,7 @@ class DesarrolladoraSearch extends Desarrolladora
         // grid filtering conditions
         $query->andFilterWhere([
             'iddesarrolladora' => $this->iddesarrolladora,
-            'videojuego_idvideojuego' => $this->videojuego_idvideojuego,
+         
         ]);
 
         $query->andFilterWhere(['like', 'nombre', $this->nombre]);

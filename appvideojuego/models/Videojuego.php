@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\web\UploadedFile;
+use yii\models\GeneroHasVideojuegos;
 
 use Yii;
 
@@ -24,7 +25,8 @@ use Yii;
 class Videojuego extends \yii\db\ActiveRecord
 {
     public $imageFile;
-
+    public $distributor = [];
+    public $genders = [];
     /**
      * {@inheritdoc}
      */
@@ -41,10 +43,13 @@ class Videojuego extends \yii\db\ActiveRecord
         return [
             [['nombre', 'fechalanzamiento'], 'default', 'value' => null],
             [['fechalanzamiento'], 'safe'],
-            [['director_iddirector'], 'required'],
-            [['director_iddirector'], 'integer'],
+            [['director_iddirector', 'desarrolladora_iddesarrolladora', 'distribuidora_iddistribuidora'], 'required'],
+            [['director_iddirector', 'desarrolladora_iddesarrolladora', 'distribuidora_iddistribuidora'], 'integer'],
             [['portada', 'nombre'], 'string', 'max' => 50],
+            [['distributor', 'genders'], 'each', 'rule' => ['integer']],
             [['director_iddirector'], 'exist', 'skipOnError' => true, 'targetClass' => Director::class, 'targetAttribute' => ['director_iddirector' => 'iddirector']],
+            [['desarrolladora_iddesarrolladora'], 'exist', 'skipOnError' => true, 'targetClass' => Desarrolladora::class, 'targetAttribute' => ['desarrolladora_iddesarrolladora' => 'iddesarrolladora']],
+            [['distribuidora_iddistribuidora'], 'exist', 'skipOnError' => true, 'targetClass' => Distribuidora::class, 'targetAttribute' => ['distribuidora_iddistribuidora' => 'iddistribuidora']],
             [['imageFile'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],
         ];
     }
@@ -60,6 +65,9 @@ class Videojuego extends \yii\db\ActiveRecord
             'nombre' => Yii::t('app', 'Nombre'),
             'fechalanzamiento' => Yii::t('app', 'Fecha lanzamiento'),
             'director_iddirector' => Yii::t('app', 'Director'),
+            'distribuidora_iddistribuidora' => Yii::t('app', 'Distribuidora'),
+            'desarrolladora_iddesarrolladora' => Yii::t('app', 'Desarrolladora'),
+
         ];
     }
     public function upload()
@@ -101,6 +109,41 @@ class Videojuego extends \yii\db\ActiveRecord
         }
     }
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        GeneroHasVideojuego::deleteAll(['videojuego_idvideojuego' => $this->idvideojuego]);
+
+        if (is_array($this->genders)) {
+            foreach ($this->genders as $generoId) {
+                $relacion = new GeneroHasVideojuego();
+                $relacion->genero_idgenero = $generoId;
+                $relacion->videojuego_idvideojuego = $this->idvideojuego;
+                $relacion->save();
+            }
+        }
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->genders = GeneroHasVideojuego::find()
+            ->select('genero_idgenero')
+            ->where(['videojuego_idvideojuego' => $this->idvideojuego])
+            ->column();
+    }
+
+    public function beforeDelete()
+    {
+        if (!parent::beforeDelete()) {
+            return false;
+        }
+
+        GeneroHasVideojuego::deleteAll(['videojuego_idvideojuego' => $this->idvideojuego]);
+        return true;
+    }
+
     /**
      * Gets query for [[Desarrolladoras]].
      *
@@ -108,7 +151,7 @@ class Videojuego extends \yii\db\ActiveRecord
      */
     public function getDesarrolladoras()
     {
-        return $this->hasMany(Desarrolladora::class, ['videojuego_idvideojuego' => 'idvideojuego']);
+        return $this->hasOne(Desarrolladora::class, ['desarrolladora_iddesarrolladora' => 'iddesarrolladora']);
     }
 
     /**
@@ -128,7 +171,7 @@ class Videojuego extends \yii\db\ActiveRecord
      */
     public function getDistribuidoras()
     {
-        return $this->hasMany(Distribuidora::class, ['videojuego_idvideojuego' => 'idvideojuego']);
+        return $this->hasOne(Distribuidora::class, ['distribuidora_iddistribuidora' => 'iddistribuidora']);
     }
 
     /**

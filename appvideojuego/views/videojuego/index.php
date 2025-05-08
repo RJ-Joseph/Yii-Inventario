@@ -44,6 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'nombre',
             'fechalanzamiento',
             'director_iddirector',
+            'desarrolladora_iddesarrolladora',
+            'distribuidora_iddistribuidora',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Videojuego $model, $key, $index, $column) {

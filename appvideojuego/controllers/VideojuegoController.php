@@ -68,39 +68,41 @@ class VideojuegoController extends Controller
      * @return string|\yii\web\Response
      */
     public function actionCreate()
-    {
-        $model = new Videojuego();
-        $message = '';
+{
+    $model = new Videojuego();
+    $message = '';
 
-        if ($this->request->isPost) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                if ($model->load($this->request->post())) {
-                    $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
-                    if ($model->save() && (!$model->imageFile || $model->upload())) {
-                        $transaction->commit();
-                        return $this->redirect(['view', 'idvideojuego' => $model->idvideojuego]);
-                    } else {
-                        $message = 'Error al guardar la Imagen';
-                        $transaction->rollBack();
-                    }
+    if ($this->request->isPost) {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if ($model->load($this->request->post())) {
+                $model->genders = Yii::$app->request->post('Videojuego')['genders'] ?? [];
+                $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
+
+                if ($model->upload()) {
+                    $transaction->commit();
+                    return $this->redirect(['view', 'idvideojuego' => $model->idvideojuego]);
                 } else {
-                    $message = 'Error al cargar la Imagen';
+                    $message = 'Error al guardar el videojuego.';
                     $transaction->rollBack();
                 }
-            } catch (\Exception $e) {
+            } else {
+                $message = 'Error al cargar datos del formulario.';
                 $transaction->rollBack();
-                $message = 'Error al guardar la Imagen';
             }
-        } else {
-            $model->loadDefaultValues();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            $message = 'Excepción al guardar: ' . $e->getMessage();
         }
-
-        return $this->render('create', [
-            'model' => $model,
-            'message' => $message,
-        ]);
+    } else {
+        $model->loadDefaultValues();
     }
+
+    return $this->render('create', [
+        'model' => $model,
+        'message' => $message,
+    ]);
+}
 
     /**
      * Updates an existing Videojuego model.
@@ -114,14 +116,16 @@ class VideojuegoController extends Controller
         $model = $this->findModel($idvideojuego);
         $message = '';
         if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->genders = Yii::$app->request->post('Videojuego')['genders'] ?? [];
             $model->imageFile = UploadedFile::getInstance($model, 'imageFile');
-
-            if ($model->save() && (!$model->imageFile || $model->upload())) {
+        
+            if ($model->upload()) {
                 return $this->redirect(['view', 'idvideojuego' => $model->idvideojuego]);
             } else {
-                $message = 'Error al guardar la imagen';
+                $message = 'Error al guardar el videojuego.';
             }
         }
+        
 
         return $this->render('update', [
             'model' => $model,

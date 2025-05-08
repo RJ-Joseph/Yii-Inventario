@@ -32,10 +32,9 @@ class Desarrolladora extends \yii\db\ActiveRecord
     {
         return [
             [['nombre'], 'default', 'value' => null],
-            [['videojuego_idvideojuego'], 'required'],
-            [['videojuego_idvideojuego'], 'integer'],
+
             [['nombre'], 'string', 'max' => 50],
-            [['videojuego_idvideojuego'], 'exist', 'skipOnError' => true, 'targetClass' => Videojuego::class, 'targetAttribute' => ['videojuego_idvideojuego' => 'idvideojuego']],
+
         ];
     }
 
@@ -47,7 +46,7 @@ class Desarrolladora extends \yii\db\ActiveRecord
         return [
             'iddesarrolladora' => Yii::t('app', 'Iddesarrolladora'),
             'nombre' => Yii::t('app', 'Nombre'),
-            'videojuego_idvideojuego' => Yii::t('app', 'Videojuego Idvideojuego'),
+
         ];
     }
 
@@ -58,7 +57,7 @@ class Desarrolladora extends \yii\db\ActiveRecord
      */
     public function getVideojuegoIdvideojuego()
     {
-        return $this->hasOne(Videojuego::class, ['idvideojuego' => 'videojuego_idvideojuego']);
+        return $this->hasMany(Videojuego::class, ['idvideojuego' => 'videojuego_idvideojuego']);
     }
 
     /**

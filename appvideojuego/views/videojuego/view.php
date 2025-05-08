@@ -42,6 +42,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'nombre',
             'fechalanzamiento',
             'director_iddirector',
+            'desarrolladora_iddesarrolladora',
+            'distribuidora_iddistribuidora',
         ],
     ]) ?>
 

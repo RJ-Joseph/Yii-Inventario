@@ -27,6 +27,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'fechalanzamiento') ?>
 
     <?= $form->field($model, 'director_iddirector') ?>
+    <?= $form->field($model, 'desarrolladora_iddesarrolladora') ?>
+    <?= $form->field($model, 'distribuidora_iddistribuidora') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

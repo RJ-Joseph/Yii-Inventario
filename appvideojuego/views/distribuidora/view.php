@@ -31,7 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'iddistribuidora',
             'nombre',
-            'videojuego_idvideojuego',
         ],
     ]) ?>
 

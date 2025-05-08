@@ -17,7 +17,7 @@ class DistribuidoraSearch extends Distribuidora
     public function rules()
     {
         return [
-            [['iddistribuidora', 'videojuego_idvideojuego'], 'integer'],
+            [['iddistribuidora'], 'integer'],
             [['nombre'], 'safe'],
         ];
     }
@@ -60,7 +60,7 @@ class DistribuidoraSearch extends Distribuidora
         // grid filtering conditions
         $query->andFilterWhere([
             'iddistribuidora' => $this->iddistribuidora,
-            'videojuego_idvideojuego' => $this->videojuego_idvideojuego,
+           
         ]);
 
         $query->andFilterWhere(['like', 'nombre', $this->nombre]);
