@@ -53,11 +53,11 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                         ['label' => 'Distribuidora', 'url' => ['/distribuidora/index']],
                         ['label' => 'Director', 'url' => ['/director/index']],
                         ['label' => 'Desarrolladora', 'url' => ['/desarrolladora/index']],
-                        ['label' => 'User', 'url' => ['/user/index']],
+                        (!Yii::$app->user->isGuest && Yii::$app->user->identity->role != 'admin') ? '' : ['label' => 'User', 'url' => ['/user/index']],
 
                     ]
                 ],
-                Yii::$app->user->isGuest ?'':['label'=>'Cambiar password','url'=>['/user/change-password']],
+                Yii::$app->user->isGuest ? '' : ['label' => 'Cambiar password', 'url' => ['/user/change-password']],
 
 
                 Yii::$app->user->isGuest

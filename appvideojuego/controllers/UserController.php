@@ -11,6 +11,41 @@ use app\models\ChangePasswordForm;
 
 class   UserController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => \yii\filters\AccessControl::class,
+                'only' => ['index', 'view', 'create', 'update', 'delete', 'reset-password', 'change-password'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['change-password'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'reset-password', 'change-password'],
+                        'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->identity->role == 'admin';
+                        }
+
+                    ]
+
+                ],
+            ],
+            'verbs' => [
+                'class' => \yii\filters\VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                    'reset-password' => ['POST'],
+                ],
+            ],
+
+        ];
+    }
+
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
@@ -82,13 +117,14 @@ class   UserController extends Controller
     }
 
 
-    public function actionChangePassword(){
+    public function actionChangePassword()
+    {
         $model = new ChangePasswordForm();
-        if($model->load(Yii::$app->request->post()) && $model->changePassword()){
-            Yii::$app->session->setFlash('success','Password changed successfully');
+        if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
+            Yii::$app->session->setFlash('success', 'Password changed successfully');
             return $this->redirect(['index']);
         }
-        return $this->render('change-password',[
+        return $this->render('change-password', [
             'model' => $model,
 
         ]);
