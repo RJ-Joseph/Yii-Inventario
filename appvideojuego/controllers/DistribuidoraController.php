@@ -2,27 +2,42 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Distribuidora;
 use app\models\DistribuidoraSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
-/**
- * DistribuidoraController implements the CRUD actions for Distribuidora model.
- */
 class DistribuidoraController extends Controller
 {
-    /**
-     * @inheritDoc
-     */
     public function behaviors()
     {
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'only' => ['index', 'view', 'create', 'update', 'delete'],
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'actions' => ['index', 'view'],
+                            'roles' => ['@'], // cualquier usuario autenticado
+                        ],
+                        [
+                            'allow' => true,
+                            'actions' => ['create', 'update', 'delete'],
+                            'roles' => ['@'],
+                            'matchCallback' => function ($rule, $action) {
+                                return Yii::$app->user->identity->role === 'admin';
+                            },
+                        ],
+                    ],
+                ],
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -31,11 +46,6 @@ class DistribuidoraController extends Controller
         );
     }
 
-    /**
-     * Lists all Distribuidora models.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
         $searchModel = new DistribuidoraSearch();
@@ -47,12 +57,6 @@ class DistribuidoraController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single Distribuidora model.
-     * @param int $iddistribuidora Iddistribuidora
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionView($iddistribuidora)
     {
         return $this->render('view', [
@@ -60,11 +64,6 @@ class DistribuidoraController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Distribuidora model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
     public function actionCreate()
     {
         $model = new Distribuidora();
@@ -82,13 +81,6 @@ class DistribuidoraController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing Distribuidora model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $iddistribuidora Iddistribuidora
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionUpdate($iddistribuidora)
     {
         $model = $this->findModel($iddistribuidora);
@@ -102,13 +94,6 @@ class DistribuidoraController extends Controller
         ]);
     }
 
-    /**
-     * Deletes an existing Distribuidora model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $iddistribuidora Iddistribuidora
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionDelete($iddistribuidora)
     {
         $this->findModel($iddistribuidora)->delete();
@@ -116,13 +101,6 @@ class DistribuidoraController extends Controller
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the Distribuidora model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $iddistribuidora Iddistribuidora
-     * @return Distribuidora the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($iddistribuidora)
     {
         if (($model = Distribuidora::findOne(['iddistribuidora' => $iddistribuidora])) !== null) {

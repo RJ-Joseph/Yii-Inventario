@@ -2,27 +2,42 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Genero;
 use app\models\GeneroSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
-/**
- * GeneroController implements the CRUD actions for Genero model.
- */
 class GeneroController extends Controller
 {
-    /**
-     * @inheritDoc
-     */
     public function behaviors()
     {
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'only' => ['index', 'view', 'create', 'update', 'delete'],
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'actions' => ['index', 'view'],
+                            'roles' => ['@'],
+                        ],
+                        [
+                            'allow' => true,
+                            'actions' => ['create', 'update', 'delete'],
+                            'roles' => ['@'],
+                            'matchCallback' => function ($rule, $action) {
+                                return Yii::$app->user->identity->role === 'admin';
+                            },
+                        ],
+                    ],
+                ],
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -31,11 +46,6 @@ class GeneroController extends Controller
         );
     }
 
-    /**
-     * Lists all Genero models.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
         $searchModel = new GeneroSearch();
@@ -47,12 +57,6 @@ class GeneroController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single Genero model.
-     * @param int $idgenero Idgenero
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionView($idgenero)
     {
         return $this->render('view', [
@@ -60,11 +64,6 @@ class GeneroController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Genero model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
     public function actionCreate()
     {
         $model = new Genero();
@@ -82,13 +81,6 @@ class GeneroController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing Genero model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $idgenero Idgenero
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionUpdate($idgenero)
     {
         $model = $this->findModel($idgenero);
@@ -102,13 +94,6 @@ class GeneroController extends Controller
         ]);
     }
 
-    /**
-     * Deletes an existing Genero model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $idgenero Idgenero
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionDelete($idgenero)
     {
         $this->findModel($idgenero)->delete();
@@ -116,13 +101,6 @@ class GeneroController extends Controller
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the Genero model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $idgenero Idgenero
-     * @return Genero the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($idgenero)
     {
         if (($model = Genero::findOne(['idgenero' => $idgenero])) !== null) {

@@ -9,6 +9,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\Videojuego;  // Asegúrate de importar el modelo Videojuego
 
 class SiteController extends Controller
 {
@@ -61,7 +62,13 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        // Cargar todos los videojuegos desde la base de datos
+        $videojuegos = Videojuego::find()->all();
+
+        // Pasar los datos a la vista 'index'
+        return $this->render('index', [
+            'videojuegos' => $videojuegos,  // Aquí pasamos los datos a la vista
+        ]);
     }
 
     /**

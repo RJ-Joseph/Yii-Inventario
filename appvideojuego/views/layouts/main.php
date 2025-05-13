@@ -43,7 +43,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             'items' => [
                 ['label' => 'Inicio', 'url' => ['/site/index']],
                 ['label' => 'Nosotros', 'url' => ['/site/about']],
-                ['label' => 'Contacto', 'url' => ['/site/contact']],
+
 
                 [
                     'label' => 'Gestionar Videojuegos',

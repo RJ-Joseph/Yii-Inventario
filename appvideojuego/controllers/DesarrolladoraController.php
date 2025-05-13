@@ -2,27 +2,42 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Desarrolladora;
 use app\models\DesarrolladoraSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
-/**
- * DesarrolladoraController implements the CRUD actions for Desarrolladora model.
- */
 class DesarrolladoraController extends Controller
 {
-    /**
-     * @inheritDoc
-     */
     public function behaviors()
     {
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'only' => ['index', 'view', 'create', 'update', 'delete'],
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'actions' => ['index', 'view'],
+                            'roles' => ['@'], // usuarios autenticados
+                        ],
+                        [
+                            'allow' => true,
+                            'actions' => ['create', 'update', 'delete'],
+                            'roles' => ['@'],
+                            'matchCallback' => function ($rule, $action) {
+                                return Yii::$app->user->identity->role === 'admin';
+                            },
+                        ],
+                    ],
+                ],
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -31,11 +46,6 @@ class DesarrolladoraController extends Controller
         );
     }
 
-    /**
-     * Lists all Desarrolladora models.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
         $searchModel = new DesarrolladoraSearch();
@@ -47,12 +57,6 @@ class DesarrolladoraController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single Desarrolladora model.
-     * @param int $iddesarrolladora Iddesarrolladora
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionView($iddesarrolladora)
     {
         return $this->render('view', [
@@ -60,11 +64,6 @@ class DesarrolladoraController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Desarrolladora model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
     public function actionCreate()
     {
         $model = new Desarrolladora();
@@ -82,13 +81,6 @@ class DesarrolladoraController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing Desarrolladora model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $iddesarrolladora Iddesarrolladora
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionUpdate($iddesarrolladora)
     {
         $model = $this->findModel($iddesarrolladora);
@@ -102,13 +94,6 @@ class DesarrolladoraController extends Controller
         ]);
     }
 
-    /**
-     * Deletes an existing Desarrolladora model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $iddesarrolladora Iddesarrolladora
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionDelete($iddesarrolladora)
     {
         $this->findModel($iddesarrolladora)->delete();
@@ -116,13 +101,6 @@ class DesarrolladoraController extends Controller
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the Desarrolladora model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $iddesarrolladora Iddesarrolladora
-     * @return Desarrolladora the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($iddesarrolladora)
     {
         if (($model = Desarrolladora::findOne(['iddesarrolladora' => $iddesarrolladora])) !== null) {
