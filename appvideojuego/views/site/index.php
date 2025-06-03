@@ -15,7 +15,6 @@ $this->registerCss("
 ?>
 <div class="jumbotron text-center bg-transparent mt-5 mb-5" style="color: white;">
     <h1 class="display-4">BIENVENIDO</h1>
-    <p class="lead">Aplicación interactiva de entretenimiento.</p>
     <p><a class="btn btn-lg btn-success" href="https://youtube.com/@benchrj?si=aToATbJpX3-nsM8A" target="_blank">Rendimiento Real Sin Excusas.</a></p>
 </div>
 
